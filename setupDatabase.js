@@ -20,7 +20,8 @@ const { DB } = require('./config');
       id              INT             PRIMARY KEY GENERATED ALWAYS AS IDENTITY NOT NULL,
       name            VARCHAR(50)     NOT NULL,
       price           BIGINT          NOT NULL,
-      description     VARCHAR(50)     NOT NULL
+      description     VARCHAR(50)     NOT NULL,
+      image_urls      TEXT[]
     );
   `
 
@@ -90,6 +91,57 @@ const { DB } = require('./config');
     await db.query(cartsTableStmt);
     await db.query(cartItemsTableStmt);
 
+    // Insert products to the database
+    const insertProductStmt = `
+      INSERT INTO products (name, price, description, image_urls)
+      VALUES ($1, $2, $3, $4)
+    `;
+
+    // Insert multiple products to database
+    const products = [
+      { 
+        name: '"happy." White t-Shirt',
+        price: 12.50, 
+        description: 'White t-shirt with happy definition in the front and with a happy face in the back', 
+        image_urls: ['https://i.imgur.com/HYwXQxP.png', 'https://i.imgur.com/x6KCl5E.png']
+      },
+      { 
+        name: '"love." Red t-Shirt', 
+        price: 12.50, 
+        description: 'Red t-shirt with love definition in the front and with a heart in the back', 
+        image_urls: ['https://i.imgur.com/j4N4UYz.png', 'https://i.imgur.com/TyzqVdk.png']
+      },
+      { 
+        name: '"sad." Black t-Shirt', 
+        price: 12.50, 
+        description: 'Black t-shirt with sad definition in the front and with a sad face in the back', 
+        image_urls: ['https://i.imgur.com/40SLrQz.png', 'https://i.imgur.com/hTgCKvN.png']
+      },
+      { 
+        name: '"not happy." Black t-Shirt', 
+        price: 12.50, 
+        description: 'Black t-shirt with chinese letter with not happy meaning in the front and with a sad face and "not happy.· letters in the back',
+        image_urls: ['https://i.imgur.com/ipMcAEL.png', 'https://i.imgur.com/LBCabFA.png']
+      },
+      { 
+        name: '"not in love." Red t-Shirt', 
+        price: 12.50, 
+        description: 'Red t-shirt with chinese letter with not in love meaning in the front and with a broken heart and "not in love.· letters in the back',
+        image_urls: ['https://i.imgur.com/jG85tJi.png', 'https://i.imgur.com/jikyEcL.png']
+      },
+      { 
+        name: '"not sad." White t-Shirt', 
+        price: 12.50, 
+        description: 'White t-shirt with chinese letter with not sad meaning in the front and with a happy face and "not sad.· letters in the back',
+        image_urls: ['https://i.imgur.com/AGdvyKD.png', 'https://i.imgur.com/YXRnqOf.png']
+      },
+    ];
+
+    for (const product of products) {
+      await db.query(insertProductStmt, [product.name, product.price, product.description, product.image_urls]);
+    }
+
+    // Disconnect database
     await db.end();
 
   } catch(err) {
