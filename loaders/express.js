@@ -5,8 +5,15 @@ const { SESSION_SECRET } = require('../config');
 
 module.exports = (app) => {
 
-  // Enable Cross Origin Resource Sharing to all origins by default
-  app.use(cors());
+  // Enable Cross Origin Resource Sharing with specific options
+  const corsOptions = {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  };
+
+  // Use CORS with the options setted before
+  app.use(cors(corsOptions));
 
   // Transforms raw string of req.body into JSON
   app.use(bodyParser.json());
@@ -14,7 +21,7 @@ module.exports = (app) => {
   // Parses urlencoded bodies
   app.use(bodyParser.urlencoded({ extended: true }));
 
-  // 
+  // Trust first proxy if you are behind a proxy (e.g., Heroku)
   app.set('trust proxy', 1);
 
   // Creates a session
@@ -31,5 +38,4 @@ module.exports = (app) => {
   );
 
   return app;
-  
 }
